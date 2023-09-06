@@ -5,17 +5,55 @@ from bson.objectid import ObjectId
 from bson.json_util import dumps
 from bson import json_util
 from flask_cors import CORS
+import datetime
 import json
-
+import jwt
+import http.client
+# from data_gathering.gatherdataprofiles import Gather
 
 app=Flask(__name__)
 
-app.config["MONGO_URI"] = "mongodb://localhost:27017/Hermes"
+app.config["MONGO_URI"] = "mongodb://localhost:27017/CropSense"
+app.config["SECRET_KEY"] ="flow@master#alphaV1$%^#&@672"
 def parse_json(data):
     return json.loads(json_util.dumps(data))
 
 mongo  = PyMongo(app)
 CORS(app)
+
+@app.route ("/unprotected",methods= ["POST"])
+def unprotected():
+    status  = 200
+    resp = {}
+    try:
+        resp   = {"message":"anyone can view this"}
+    except Exception as e :
+        status= 403
+        resp={"message":f"{e}","status":"fail"}
+        print("ERORR (/unprotected route)--->",e)
+    return jsonify(resp),status
+@app.route ("/protected",methods= ["POST"])
+def protected():
+    status  = 200
+    resp = {}
+    try:
+        data = request.get_json("data")
+        token = data["data"]["token"]
+        if token == "":
+            return jsonify({"message":"invalid"}),403
+        try:
+            data = jwt.decode(token, app.config["SECRET_KEY"],algorithms=['HS256'])
+            resp  = {"message":"valid"}
+            return jsonify(resp),200
+        except:
+            return jsonify({"message":'invalid'}),403
+
+    except Exception as e :
+        status= 403
+        resp={"message":f"{e}","status":"fail"}
+        print("ERORR (/protected route)--->",e)
+    return jsonify(resp),status
+
 @app.route("/User/signup",methods=["POST"])
 def signup():
     status = 200
@@ -23,24 +61,24 @@ def signup():
     try:
         data = request.get_json("data")
         print(data)
-        username = data["data"]["username"]
         email = data["data"]["email"]
         password = data["data"]["password"]
-        database_check = mongo.db.user.find_one({"username":f"{username}","email":f"{email}"})
-        print(parse_json(database_check))
+        database_check = mongo.db.user.find_one({"email":f"{email}"})
+        
         if parse_json(database_check) == None:
-            if username != "" and email !="" and password != "":
+            if  email !="" and password != "":
 
                 payload = {
-                    "username":username ,
                     "email":email,
                     "password":password
                 }
                 mongo.db.user.insert_one(payload) 
                 status = 200  
-                resp = {"message":"user made", "token":"0"}
+                token = jwt.encode({"email":email,"exp":datetime.datetime.utcnow()+ datetime.timedelta(minutes=180)},app.config["SECRET_KEY"])
+                resp = {"message":"User account made", "token":token,'status':200}
+                print(resp)
+                return jsonify(resp),status
         else:
-            print("we being used ")
             status = 200
             resp ={"message":"User credentials are in use","token":"1"}
         return jsonify(resp),status 
@@ -55,20 +93,23 @@ def login():
     try:
         data = request.get_json("data")
         print(data)
-        username = data["data"]["username"]
+        email = data["data"]["email"]
         password = data["data"]["password"]
-        if username != "" and password != "":
-            database_check  = mongo.db.user.find_one({"username":f"{username}"})
+        if email != "" and password != "":
+            database_check  = mongo.db.user.find_one({"email":f"{email}"})
             print(parse_json(database_check))
             if parse_json(database_check) != None:
-
+                print(password)
                 database_password  = database_check["password"]
                 if password == database_password:
+                    print(" they are the same")
+                    token = jwt.encode({"user_number":email,"exp":datetime.datetime.utcnow()+ datetime.timedelta(minutes=180)},app.config["SECRET_KEY"])
                     data= parse_json(database_check)
-                    resp ={"message":"success","user":data,"token":"0"}
+                    resp ={"message":"success","user":data,"token":token,"status":status}
+                    print(resp)
                 else:
-                    status =200
-                    resp  ={"message":"User password is incorrect","token":"1"}
+                    status =400
+                    resp  ={"message":"User password is incorrect"}
             else :
                 status = 200
                 resp = {"message":"User does not exsit","token":"1"}
@@ -77,18 +118,97 @@ def login():
         print("ERROR on /User/Login",e)
         return jsonify(resp), status
     
-app.route("/get/cordinates",methods=["POST"])
+@app.route("/get/corodinates/dataprofile", methods=["POST"])
+def get_profile_data():
+    status  = 200
+    resp  = {}
+    try: 
+        data = request.get_json("data")
+        print(data)
+        if data != "":
+            payload  = {
+                " user": data["data"]["user"],
+                "user_number":data["data"]["user_number"]
+            }
+            response = mongo.db.user.insert_one(payload) 
+
+    except Exception  as e : 
+        print("ERROR on /User/Login",e)
+        return jsonify(resp), status
+    
+@app.route("/get/cordinates/weather",methods=["POST"])
 def get_cordinates():
     status = 200
     resp = {}
     try:
+        print("hello")
         data  = request.get_json("data")
+        name = data["data"]["name"]
+        conn = http.client.HTTPSConnection("ai-weather-by-meteosource.p.rapidapi.com")
+
+        headers = {
+            'X-RapidAPI-Key': "b97746ddd1mshc2043dd274eda0fp16cb26jsn4c213461107f",
+            'X-RapidAPI-Host': "ai-weather-by-meteosource.p.rapidapi.com"
+        }
+
+        conn.request("GET", f"/find_places?text={name}&language=en", headers=headers)
+        res = conn.getresponse()
+        data = res.read()
+
+        print(data.decode("utf-8"))
+        # Assuming 'data' is the decoded byte data
+        decoded_data = data.decode("utf-8")
+
+        # Convert the decoded data to a JSON object
+        json_data = json.loads(decoded_data)
+        return jsonify(json_data),status
     except Exception as e :
         print("ERROR on /get/cordinates: ",e)
         return jsonify(resp),status
 
+@app.route("/get/current/weather", methods = ["GET"])
+def get_weather():
+    status  = 200
+    resp= {}
+    try:
+        conn = http.client.HTTPSConnection("ai-weather-by-meteosource.p.rapidapi.com")
+        headers = {
+            'X-RapidAPI-Key': "b97746ddd1mshc2043dd274eda0fp16cb26jsn4c213461107f",
+            'X-RapidAPI-Host': "ai-weather-by-meteosource.p.rapidapi.com"
+        }
+        conn.request("GET", "/current?lat=37.81021&lon=-122.42282&timezone=auto&language=en&units=auto", headers=headers)
 
+        res = conn.getresponse()
+        data = res.read()
 
-if __name__  =="__main__":
-    app.run(debug=True)
-    # app.run(host='0.0.0.0',port=5000)
+        # Assuming 'data' is the decoded byte data
+        decoded_data = data.decode("utf-8")
+
+        # Convert the decoded data to a JSON object
+        json_data = json.loads(decoded_data)
+        return jsonify(json_data),status
+    except Exception as e : 
+        print("ERROR on /get/weather: ",e)
+    return jsonify(resp),status
+
+@app.route("/get/weather/alerts", methods = ["GET"])
+def get_weather_alerts():
+    status  = 200
+    resp= {}
+    try:
+        conn = http.client.HTTPSConnection("ai-weather-by-meteosource.p.rapidapi.com")
+
+        headers = {
+            'X-RapidAPI-Key': "b97746ddd1mshc2043dd274eda0fp16cb26jsn4c213461107f",
+            'X-RapidAPI-Host': "ai-weather-by-meteosource.p.rapidapi.com"
+        }
+
+        conn.request("GET", "/alerts?lat=45.74846&lon=4.84671&timezone=auto&language=en", headers=headers)
+
+        res = conn.getresponse()
+        data = res.read()
+
+        print(data.decode("utf-8"))
+    except Exception as e : 
+        print("ERROR on /get/weather: ",e)
+    return jsonify(resp),status
