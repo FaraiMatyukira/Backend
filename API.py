@@ -9,6 +9,8 @@ import datetime
 import json
 import jwt
 import http.client
+import bson
+import uuid
 # from data_gathering.gatherdataprofiles import Gather
 
 app=Flask(__name__)
@@ -64,13 +66,14 @@ def signup():
         email = data["data"]["email"]
         password = data["data"]["password"]
         database_check = mongo.db.user.find_one({"email":f"{email}"})
-        
+        id = bson.Binary.from_uuid(uuid.uuid1())
         if parse_json(database_check) == None:
             if  email !="" and password != "":
 
                 payload = {
-                    "email":email,
-                    "password":password
+                    "email":f"{email}",
+                    "password":f"{password}",
+                    "user_number":id
                 }
                 mongo.db.user.insert_one(payload) 
                 status = 200  
@@ -118,24 +121,44 @@ def login():
         print("ERROR on /User/Login",e)
         return jsonify(resp), status
     
-@app.route("/get/corodinates/dataprofile", methods=["POST"])
-def get_profile_data():
+@app.route("/set/corodinates/dataprofile", methods=["POST"])
+def set_profile_data():
     status  = 200
     resp  = {}
     try: 
         data = request.get_json("data")
-        print(data)
         if data != "":
             payload  = {
-                " user": data["data"]["user"],
-                "user_number":data["data"]["user_number"]
+                "user": data["data"]["user"],
+                "user_number":data["data"]["user_number"],
+                "coordinates":data["data"]["coordinates"],
+                "subsection_name": data["data"]["subsection_name"]
             }
-            response = mongo.db.user.insert_one(payload) 
+            response = mongo.db.coordinates.insert_one(payload) 
+            if response != "":
+                resp = {"message": "Profile coordinates saved"}
 
     except Exception  as e : 
-        print("ERROR on /User/Login",e)
+        print("ERROR on /set/corodinates/dataprofile",e)
         return jsonify(resp), status
     
+@app.route("/get/corodinates/dataprofile",methods=["POST"])
+def get_profile_data():
+    status= 200
+    resp  = {}
+    try:
+        data  = request.get_json("data")
+        if data != "":
+            payload ={
+                "user_number":data["data"]["user_number"]
+            }
+            response =mongo.db.coordinates.find_one(payload)
+            if response != "":
+                resp = {"message":"Profile coordinates retrieved"}
+    except Exception as e:
+        print("ERROR on /get/corodinates/dataprofile",e)
+        return jsonify(resp), status
+
 @app.route("/get/cordinates/weather",methods=["POST"])
 def get_cordinates():
     status = 200

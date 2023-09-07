@@ -26,6 +26,8 @@ X_test_data = new_data[['EVI', 'NDVI', 'MSAVI', 'sur_refl_b01', 'sur_refl_b02']]
 
 # Standardize the test data using the same scaler used for training
 scaler = StandardScaler()
+# Fit the scaler on your training data
+scaler.fit(X_test_data)
 X_test_data_scaled = scaler.transform(X_test_data)
 # Assuming 'new_data' is a numpy array or DataFrame with the same features as used during training
 predictions = loaded_model.predict(X_test_data_scaled)
