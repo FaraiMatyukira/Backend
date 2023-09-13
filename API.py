@@ -12,6 +12,7 @@ import http.client
 import bson
 import uuid
 # from data_gathering.gatherdataprofiles import Gather
+from predictors.EVIprediction import EVI_predictions
 
 app=Flask(__name__)
 
@@ -45,7 +46,8 @@ def protected():
             return jsonify({"message":"invalid"}),403
         try:
             data = jwt.decode(token, app.config["SECRET_KEY"],algorithms=['HS256'])
-            resp  = {"message":"valid"}
+            
+            resp  = {"message":"valid","email":data["email"]}
             return jsonify(resp),200
         except:
             return jsonify({"message":'invalid'}),403
@@ -78,7 +80,7 @@ def signup():
                 mongo.db.user.insert_one(payload) 
                 status = 200  
                 token = jwt.encode({"email":email,"exp":datetime.datetime.utcnow()+ datetime.timedelta(minutes=180)},app.config["SECRET_KEY"])
-                resp = {"message":"User account made", "token":token,'status':200}
+                resp = {"message":"User account made", "token":token,'status':status}
                 print(resp)
                 return jsonify(resp),status
         else:
@@ -127,38 +129,62 @@ def set_profile_data():
     resp  = {}
     try: 
         data = request.get_json("data")
+        print(data)
         if data != "":
             payload  = {
-                "user": data["data"]["user"],
-                "user_number":data["data"]["user_number"],
+                "email": data["data"]["email"],
                 "coordinates":data["data"]["coordinates"],
                 "subsection_name": data["data"]["subsection_name"]
             }
+            print(payload)
             response = mongo.db.coordinates.insert_one(payload) 
-            if response != "":
-                resp = {"message": "Profile coordinates saved"}
-
+            resp = {"message": "Profile coordinates saved"}
+            return jsonify(resp), status
     except Exception  as e : 
         print("ERROR on /set/corodinates/dataprofile",e)
         return jsonify(resp), status
-    
-@app.route("/get/corodinates/dataprofile",methods=["POST"])
+
+
+@app.route("/get/corodinates/dataprofile",methods=["GET"])
 def get_profile_data():
     status= 200
     resp  = {}
     try:
-        data  = request.get_json("data")
-        if data != "":
-            payload ={
-                "user_number":data["data"]["user_number"]
+        response =mongo.db.coordinates.find({})
+        data = parse_json(response)
+        subsection  = []
+        for i  in  data :
+            payload  = {
+               "coordinates":i["coordinates"],
+                "subsection_name": i["subsection_name"] 
             }
-            response =mongo.db.coordinates.find_one(payload)
-            if response != "":
-                resp = {"message":"Profile coordinates retrieved"}
+            subsection.append(payload)
+        resp = {"message":"Profile coordinates retrieved","data":subsection}
+        return jsonify(resp), status
     except Exception as e:
         print("ERROR on /get/corodinates/dataprofile",e)
         return jsonify(resp), status
-
+@app.route("/get/model/dataprofile",methods=["GET"])
+def get_model_data():
+    status= 200
+    resp  = {}
+    try:
+        insatnce  = EVI_predictions()
+        data  = insatnce.get_polygon_profile()
+        # response =mongo.db.coordinates.find({})
+        # data = parse_json(response)
+        # subsection  = []
+        # for i  in  data :
+        #     payload  = {
+        #        "coordinates":i["coordinates"],
+        #         "subsection_name": i["subsection_name"] 
+        #     }
+        #     subsection.append(payload)
+        resp = {"message":"Profile coordinates retrieved","data":data}
+        return jsonify(resp), status
+    except Exception as e:
+        print("ERROR on /get/corodinates/dataprofile",e)
+        return jsonify(resp), status
 @app.route("/get/cordinates/weather",methods=["POST"])
 def get_cordinates():
     status = 200
@@ -235,3 +261,6 @@ def get_weather_alerts():
     except Exception as e : 
         print("ERROR on /get/weather: ",e)
     return jsonify(resp),status
+
+if __name__  =="__main__":
+    app.run(debug=True)
