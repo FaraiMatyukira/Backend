@@ -13,6 +13,10 @@ import bson
 import uuid
 # from data_gathering.gatherdataprofiles import Gather
 from predictors.EVIprediction import EVI_predictions
+from predictors.NDVIprediction import NDVI_predictions
+from predictors.MSAVIprediction import MSAVI_predictions
+from classifiers.Classifier_Service import farm_Classifier
+
 
 app=Flask(__name__)
 
@@ -144,7 +148,21 @@ def set_profile_data():
         print("ERROR on /set/corodinates/dataprofile",e)
         return jsonify(resp), status
 
-
+@app.route("/delete/corodinates/dataprofile", methods=["POST"])
+def delete_profile_data():
+    status  = 200
+    resp  = {}
+    try: 
+        data = request.get_json("data")
+        name = data["data"]["subsection_name"]
+        print(data)
+        if data != "":
+            response = mongo.db.coordinates.delete_one({"subsection_name":name}) 
+            resp = {"message": "Profile coordinates deleted"}
+            return jsonify(resp), status
+    except Exception  as e : 
+        print("ERROR on /delete/corodinates/dataprofile",e)
+        return jsonify(resp), status
 @app.route("/get/corodinates/dataprofile",methods=["GET"])
 def get_profile_data():
     status= 200
@@ -170,7 +188,21 @@ def get_model_data():
     resp  = {}
     try:
         insatnce  = EVI_predictions()
-        data  = insatnce.get_polygon_profile()
+        evi_data  = insatnce.get_polygon_profile()
+
+        insatnce2  = NDVI_predictions()
+        ndvi_data  = insatnce2.get_polygon_profile()
+
+        insatnce3  = MSAVI_predictions()
+        msavi_data  = insatnce3.get_polygon_profile()
+
+
+        payload  = {
+            "NDVI_profile":ndvi_data,
+            "EVI_profile":evi_data,
+            "MSAVI_profile":msavi_data
+
+        }
         # response =mongo.db.coordinates.find({})
         # data = parse_json(response)
         # subsection  = []
@@ -180,10 +212,45 @@ def get_model_data():
         #         "subsection_name": i["subsection_name"] 
         #     }
         #     subsection.append(payload)
-        resp = {"message":"Profile coordinates retrieved","data":data}
+        resp = {"message":"Profile coordinates retrieved","data":payload}
         return jsonify(resp), status
     except Exception as e:
         print("ERROR on /get/corodinates/dataprofile",e)
+        return jsonify(resp), status
+@app.route("/get/model/classes",methods= ["GET"])
+def get_model_classes():
+    status= 200
+    resp  = {}
+    try:
+        isinstance= farm_Classifier()
+        payload  = {
+            "ndvi_class": isinstance.EVI(),
+            "evi_class": isinstance.NDVI(),
+            "msavi_class":isinstance.MSAVI()
+        }
+        print(payload)
+        return jsonify(payload),status  
+    except Exception as e : 
+        print("ERROR on /get/model/classes",e)
+        return jsonify(resp), status
+@app.route("/post/model/classes",methods= ["POST"])
+def post_model_classes():
+    status= 200
+    resp  = {}
+    try:
+        data  = request.get_json("data")
+        bands = data["data"]["bands"]
+        month = data["data"]["months"]
+        isinstance= farm_Classifier()
+        payload  = {
+            "ndvi_class": isinstance.EVI(),
+            "evi_class": isinstance.NDVI(),
+            "msavi_class":isinstance.MSAVI()
+        }
+        print(payload)
+        return jsonify(payload),status  
+    except Exception as e : 
+        print("ERROR on /get/model/classes",e)
         return jsonify(resp), status
 @app.route("/get/cordinates/weather",methods=["POST"])
 def get_cordinates():
