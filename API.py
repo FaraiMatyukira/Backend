@@ -217,22 +217,22 @@ def get_model_data():
     except Exception as e:
         print("ERROR on /get/corodinates/dataprofile",e)
         return jsonify(resp), status
-@app.route("/get/model/classes",methods= ["GET"])
-def get_model_classes():
-    status= 200
-    resp  = {}
-    try:
-        isinstance= farm_Classifier()
-        payload  = {
-            "ndvi_class": isinstance.EVI(),
-            "evi_class": isinstance.NDVI(),
-            "msavi_class":isinstance.MSAVI()
-        }
-        print(payload)
-        return jsonify(payload),status  
-    except Exception as e : 
-        print("ERROR on /get/model/classes",e)
-        return jsonify(resp), status
+# @app.route("/get/model/classes",methods= ["GET"])
+# def get_model_classes():
+#     status= 200
+#     resp  = {}
+#     try:
+#         instance= farm_Classifier()
+#         payload  = {
+#             "ndvi_class": instance.EVI(),
+#             "evi_class": instance.NDVI(),
+#             "msavi_class":instance.MSAVI()
+#         }
+#         print(payload)
+#         return jsonify(payload),status  
+#     except Exception as e : 
+#         print("ERROR on /get/model/classes",e)
+#         return jsonify(resp), status
 @app.route("/post/model/classes",methods= ["POST"])
 def post_model_classes():
     status= 200
@@ -240,15 +240,20 @@ def post_model_classes():
     try:
         data  = request.get_json("data")
         bands = data["data"]["bands"]
-        month = data["data"]["months"]
-        isinstance= farm_Classifier()
-        payload  = {
-            "ndvi_class": isinstance.EVI(),
-            "evi_class": isinstance.NDVI(),
-            "msavi_class":isinstance.MSAVI()
-        }
-        print(payload)
-        return jsonify(payload),status  
+        if bands  != []:
+            print("array recieved==>",bands)
+            isinstance= farm_Classifier()
+            payload  = {
+                "ndvi_class": isinstance.EVI(bands),
+                "evi_class": isinstance.NDVI(bands),
+                "msavi_class":isinstance.MSAVI(bands)
+            }
+            print(payload)
+            return jsonify(payload),status  
+        else : 
+            status = 400
+            resp = {"message":"missing inputs"}
+            return jsonify(payload),status 
     except Exception as e : 
         print("ERROR on /get/model/classes",e)
         return jsonify(resp), status

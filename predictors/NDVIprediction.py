@@ -7,7 +7,9 @@ from sklearn.metrics import mean_squared_error
 def get_model(file_name):
     try:
         # Load your CSV data into a Pandas DataFrame
-        data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
+        # data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
+        data = pd.read_csv(r"C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
+
         # Split the data into features (X) and target (y)
         X = data[[ 'sur_refl_b01', 'sur_refl_b02', 'sur_refl_b03', 'sur_refl_b07', 'Month']]
         y = data['NDVI']
@@ -89,7 +91,7 @@ class NDVI_predictions():
             linear_model, X_test = get_model("jdfblsflasflds")
             #  Define a test case for linear regression
             # linear_test_case = np.array([[643.06, 2550.2599999999998, 292.28999999999996, 1959.3499999999997, 3]]) format
-            linear_test_case = np.array(list_of_data)
+            linear_test_case = np.array([list_of_data])
             # Make predictions using the linear regression model
             linear_prediction = linear_model.predict(linear_test_case)
 

@@ -37,9 +37,12 @@ def reverse_categorize_evi(evi_value):
         return "High Vegetation"
     
 class farm_Classifier():
-    def MSAVI(self):
-        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\MSAVI.joblib')
-        new_data = np.array([[758.4887218045112,3395.864661654135,359.0902255639097,1192.6691729323309, 3]])
+    def MSAVI(self,array):
+   
+        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\MSAVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\MSAVI.joblib')
+
+        new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
         scaler = StandardScaler()
         scaler.fit(new_data)
@@ -78,11 +81,13 @@ class farm_Classifier():
 
 
 
-    def NDVI(self):
-        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\NDVI.joblib')
+    def NDVI(self,array):
+        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\NDVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\NDVI.joblib')
+
         data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
         data['EVI']= data['EVI']/10000
-        new_data = np.array([[758.4887218045112,3395.864661654135,359.0902255639097,1192.6691729323309, 3]])
+        new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
         scaler = StandardScaler()
         scaler.fit(new_data)
@@ -120,10 +125,11 @@ class farm_Classifier():
 
 
 
-    def EVI(self):
-        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\EVI.joblib')
+    def EVI(self,array):
+        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\EVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\EVI.joblib')
         # Extract the features for prediction
-        new_data = np.array([[758.4887218045112,3395.864661654135,359.0902255639097,1192.6691729323309, 3]])
+        new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
         scaler = StandardScaler()
         scaler.fit(new_data)
