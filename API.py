@@ -13,6 +13,7 @@ import bson
 import uuid
 # from data_gathering.gatherdataprofiles import Gather
 from predictors.EVIprediction import EVI_predictions
+from predictors.data_retrieve import retrieve
 from predictors.NDVIprediction import NDVI_predictions
 from predictors.MSAVIprediction import MSAVI_predictions
 from classifiers.Classifier_Service import farm_Classifier
@@ -217,22 +218,21 @@ def get_model_data():
     except Exception as e:
         print("ERROR on /get/corodinates/dataprofile",e)
         return jsonify(resp), status
-# @app.route("/get/model/classes",methods= ["GET"])
-# def get_model_classes():
-#     status= 200
-#     resp  = {}
-#     try:
-#         instance= farm_Classifier()
-#         payload  = {
-#             "ndvi_class": instance.EVI(),
-#             "evi_class": instance.NDVI(),
-#             "msavi_class":instance.MSAVI()
-#         }
-#         print(payload)
-#         return jsonify(payload),status  
-#     except Exception as e : 
-#         print("ERROR on /get/model/classes",e)
-#         return jsonify(resp), status
+@app.route("/get/recent/bands",methods= ["GET"])
+def get_recent_bands():
+    status= 200
+    resp  = {}
+    try:
+        instance= retrieve()
+        data  = instance.get_tail()
+        payload = {
+            "data":data
+        }
+        print(payload)
+        return jsonify(payload),status  
+    except Exception as e : 
+        print("ERROR on /get/model/classes",e)
+        return jsonify(resp), status
 @app.route("/post/model/classes",methods= ["POST"])
 def post_model_classes():
     status= 200
@@ -244,8 +244,8 @@ def post_model_classes():
             print("array recieved==>",bands)
             isinstance= farm_Classifier()
             payload  = {
-                "ndvi_class": isinstance.EVI(bands),
-                "evi_class": isinstance.NDVI(bands),
+                "ndvi_class": isinstance.NDVI(bands),
+                "evi_class": isinstance.EVI(bands),
                 "msavi_class":isinstance.MSAVI(bands)
             }
             print(payload)

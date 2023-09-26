@@ -8,39 +8,116 @@ from sklearn.preprocessing import StandardScaler
 # Convert predicted categories back to original NDVI labels
 def reverse_categorize_msavi(category):
     if category == 0:
-        return "Barren"
+        return {
+            "class": "Barren",
+            "suggestion": [
+                "Soil Testing: Conduct soil tests to assess nutrient deficiencies or pH imbalances.",
+                "Soil Improvement: Add organic matter to improve soil quality.",
+                "Consider Soil Erosion Control: Implement measures to prevent soil erosion in barren areas."
+            ]
+        }
     elif category == 1:
-        return "Germination stage"
+        return {
+            "class": "Germination stage",
+            "suggestion": [
+                "Optimize Planting: Ensure proper planting depth and spacing for germinating crops.",
+                "Water Management: Provide adequate moisture for seed germination.",
+                "Monitor for Pests and Diseases: Be vigilant for early signs of pest or disease issues during this vulnerable stage."
+            ]
+        }
     elif category == 2:
-        return "Leaf development stage"
+        return {
+            "class": "Germination stage",
+            "suggestion": [
+                "Optimize Planting: Ensure proper planting depth and spacing for germinating crops.",
+                "Water Management: Provide adequate moisture for seed germination.",
+                "Monitor for Pests and Diseases: Be vigilant for early signs of pest or disease issues during this vulnerable stage."
+            ]
+        }
     elif category == 3:
-        return "Vegetation covers soil"
+        return {
+            "class": "Vegetation covers soil",
+            "suggestion": [
+                "Regular Maintenance: Continue with regular maintenance, including irrigation and fertilization.",
+                "Harvest Planning: Plan for the upcoming harvest and post-harvest activities.",
+                "Monitor for Overcrowding: Be mindful of plant spacing to avoid overcrowding and resource competition."
+            ]
+        }
 
     else:
-        return "Undefined"
+        return {"class": "Unknown category", "suggestion": []}
 def reverse_categorize_ndvi(category):
     if category == 0:
-        return "Barren"
+        return  {
+            "class": "Barren",
+            "suggestion": [
+                "Soil Testing: Conduct soil tests to assess nutrient deficiencies or pH imbalances.",
+                "Soil Improvement: Add organic matter to improve soil quality."
+                "Consider Alternative Crops: Evaluate whether other crop options or land use strategies might be more suitable for this area."
+            ]
+        },
     elif category == 1:
-        return "Sparse Vegetation"
+        return {
+            "class": "Sparse Vegetation",
+            "suggestion": [
+                "Irrigation Management: Optimize irrigation practices to ensure adequate water supply.",
+                "Nutrient Analysis: Conduct soil tests to determine nutrient needs and apply appropriate fertilizers.",
+                "Pest and Weed Control: Implement pest and weed management strategies to promote healthier vegetation."
+            ]
+        }
     elif category == 2:
-        return "Dense Vegetation"
+        return {
+            "class": "Dense Vegetation",
+            "suggestion": [
+                "Pruning and Thinning: If applicable, consider thinning crowded areas to allow better light penetration.",
+                "Disease Management: Monitor for plant diseases and take preventive measures as needed.",
+                "Harvest Planning: Plan harvest and maintenance activities to maximize yield and plant health."
+            ]
+        }
     else:
-        return "Undefined"  
+        return {
+            "class": "Dense Vegetation",
+            "suggestion": [
+                "Pruning and Thinning: If applicable, consider thinning crowded areas to allow better light penetration.",
+                "Disease Management: Monitor for plant diseases and take preventive measures as needed.",
+                "Harvest Planning: Plan harvest and maintenance activities to maximize yield and plant health."
+            ]
+        }  
     
 def reverse_categorize_evi(evi_value):
     if evi_value == 0:
-        return "Low Vegetation"
+        return {
+            "class": "Low Vegetation",
+            "suggestion": [
+                "Irrigation Assessment: Evaluate irrigation practices and consider adjusting water supply if necessary.",
+                "Nutrient Management: Conduct soil tests to determine nutrient deficiencies and address them.",
+                "Drought Resilience: Implement strategies to make the vegetation more resilient to drought conditions."
+            ]
+        }
     elif evi_value == 1:
-        return "Moderate Vegetation"
+        return {
+            "class": "Low Vegetation",
+            "suggestion": [
+                "Irrigation Assessment: Evaluate irrigation practices and consider adjusting water supply if necessary.",
+                "Nutrient Management: Conduct soil tests to determine nutrient deficiencies and address them.",
+                "Drought Resilience: Implement strategies to make the vegetation more resilient to drought conditions."
+            ]
+        }
     else:
-        return "High Vegetation"
+        return {
+            "class": "High Vegetation",
+            "suggestion": [
+                "Monitor Growth: Keep an eye on vegetation growth and consider pruning or thinning if necessary.",
+                "Nutrient Optimization: Ensure optimal nutrient levels for maximum plant health and productivity.",
+                "Harvest Planning: Plan for the upcoming harvest and post-harvest activities."
+            ]
+        }
     
 class farm_Classifier():
     def MSAVI(self,array):
    
-        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\MSAVI.joblib')
-        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\MSAVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\MSAVI.joblib')
+        # loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\MSAVI.joblib')
 
         new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
@@ -54,39 +131,19 @@ class farm_Classifier():
         print(predicted_category_index)
         # 4297.3007518796985
         # Convert the predicted category index to NDVI label
+        print(predicted_category_index)
         predicted_label = reverse_categorize_msavi(predicted_category_index)
+        # print( "msavi",predicted_label)
         return predicted_label
-        # new_data = np.array([[643.06, 2550.2599999999998, 292.28999999999996, 1959.3499999999997, 3]])
-        # # new_data = pd.read_csv("Grobler Boerdery_ndvi_Area3.csv",sep = ";")
-        # # Calculate MSAVI
-        # new_data['MSAVI'] = (2 * new_data['sur_refl_b02'] + 1 - np.sqrt((2 * new_data['sur_refl_b02'] + 1)**2 - 8 * (new_data['sur_refl_b02'] - new_data['sur_refl_b01']))) / 2
-        # # Extract the features for prediction
-        # X_test_data = new_data[['EVI', 'NDVI', 'MSAVI', 'sur_refl_b01', 'sur_refl_b02']]
-
-        # # Standardize the test data using the same scaler used for training
-        # scaler = StandardScaler()
-        # # Fit the scaler on your training data
-        # scaler.fit(X_test_data)
-        # X_test_data_scaled = scaler.transform(X_test_data)
-        # # Assuming 'new_data' is a numpy array or DataFrame with the same features as used during training
-        # predictions = loaded_model.predict(X_test_data_scaled)
-        # predicted_categories = np.argmax(predictions, axis=1)
-
-        # # Convert predicted categories back to original NDVI labels
-        # predicted_labels = np.array([reverse_categorize_msavi(category) for category in predicted_categories])
-
-        # # Print the predicted labels and original NDVI values for each data point
-        # for i, (label, msavi_value) in enumerate(zip(predicted_labels, new_data['MSAVI'])):
-        #     print(f'Data Point {i+1}: Predicted MSAVI Category - {label}, Original MSAVI Value - {msavi_value}')
-
+  
 
 
     def NDVI(self,array):
-        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\NDVI.joblib')
-        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\NDVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\NDVI.joblib')
+        # loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\NDVI.joblib')
 
-        data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
-        data['EVI']= data['EVI']/10000
+        # data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
+        # data['EVI']= data['EVI']/10000
         new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
         scaler = StandardScaler()
@@ -95,39 +152,20 @@ class farm_Classifier():
 
         # Make predictions
         predicted_category = loaded_model.predict(test_case_scaled)
+        print("predicted_category",predicted_category)
         predicted_category_index = np.argmax(predicted_category)
-        print(predicted_category_index)
         # 4297.3007518796985
         # Convert the predicted category index to NDVI label
+        print("predicted_category_index",predicted_category_index)
         predicted_label = reverse_categorize_ndvi(predicted_category_index)
+        print( "ndvi",predicted_label)
         return predicted_label
-        # new_data = np.array([[643.06, 2550.2599999999998, 292.28999999999996, 1959.3499999999997, 3]])
-        # # new_data = pd.read_csv("Grobler Boerdery_ndvi_Area3.csv",sep = ";")
-        # # Extract the features for prediction
-        # X_test_data = new_data[['sur_refl_b01', 'sur_refl_b02', 'sur_refl_b03', 'sur_refl_b07', 'Month']]
-        # # Fit the scaler on your training data
-        #   # Standardize the test data using the same scaler used for training
-        # scaler = StandardScaler()
-        # scaler.fit(X_test_data)
-        # # Standardize the test data using the same scaler used for training
-        # X_test_data_scaled = scaler.transform(X_test_data)
-
-        # # Make predictions
-        # predictions = loaded_model.predict(X_test_data_scaled)
-        # predicted_categories = np.argmax(predictions, axis=1)
-
-        # # Convert predicted categories back to original NDVI labels
-        # predicted_labels = np.array([reverse_categorize_ndvi(category) for category in predicted_categories])
-
-        # # Print the predicted labels and original NDVI values for each data point
-        # for i, (label, ndvi_value) in enumerate(zip(predicted_labels, new_data['NDVI'])):
-        #     print(f'Data Point {i+1}: Predicted NDVI Category - {label}, Original NDVI Value - {ndvi_value}')
-
+       
 
 
     def EVI(self,array):
-        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\EVI.joblib')
-        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\EVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\EVI.joblib')
+        # loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\EVI.joblib')
         # Extract the features for prediction
         new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
@@ -143,22 +181,4 @@ class farm_Classifier():
         # Convert the predicted category index to NDVI label
         predicted_label = reverse_categorize_evi(predicted_category_index)  
         return predicted_label
-        # # X_test_data = new_data[['sur_refl_b01', 'sur_refl_b02', 'sur_refl_b03', 'sur_refl_b07', 'Month']]
-        # # Fit the scaler on your training data
-        # # Standardize the test data using the same scaler used for training
-        # scaler = StandardScaler()
-        # scaler.fit(new_data)
-        # # Standardize the test data using the same scaler used for training
-        # X_test_data_scaled = scaler.transform(new_data)
-
-        # # Make predictions
-        # predictions = loaded_model.predict(X_test_data_scaled)
-        # predicted_categories = np.argmax(predictions, axis=1)
-
-        # # Convert predicted categories back to original NDVI labels
-        # predicted_labels = np.array([reverse_categorize_evi(category) for category in predicted_categories])
-
-        # # Print the predicted labels and original NDVI values for each data point
-        # for i, (label, ndvi_value) in enumerate(zip(predicted_labels, new_data['EVI'])):
-        #     print(f'Data Point {i+1}: Predicted EVI Category - {label}, Original EVI Value - {ndvi_value}')
-
+     

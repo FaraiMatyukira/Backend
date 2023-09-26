@@ -9,8 +9,8 @@ from sklearn.metrics import mean_squared_error
 def get_model(file_name):
     try:
         # Load your CSV data into a Pandas DataFrame
-        # data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
-        data = pd.read_csv(r"C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
+        data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
+        # data = pd.read_csv(r"C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
 
         data['MSAVI'] = (2 * data['sur_refl_b02'] + 1 - np.sqrt((2 * data['sur_refl_b02'] + 1)**2 - 8 * (data['sur_refl_b02'] - data['sur_refl_b01']))) / 2
         # Split the data into features (X) and target (y)
