@@ -116,8 +116,8 @@ def reverse_categorize_evi(evi_value):
 class farm_Classifier():
     def MSAVI(self,array):
    
-        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\MSAVI.joblib')
-        # loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\MSAVI.joblib')
+        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\MSAVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\MSAVI.joblib')
 
         new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
@@ -128,8 +128,8 @@ class farm_Classifier():
         # Make predictions
         predicted_category = loaded_model.predict(test_case_scaled)
         predicted_category_index = np.argmax(predicted_category)
-        print(predicted_category_index)
-        # 4297.3007518796985
+        
+
         # Convert the predicted category index to NDVI label
         print(predicted_category_index)
         predicted_label = reverse_categorize_msavi(predicted_category_index)
@@ -139,8 +139,8 @@ class farm_Classifier():
 
 
     def NDVI(self,array):
-        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\NDVI.joblib')
-        # loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\NDVI.joblib')
+        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\NDVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\NDVI.joblib')
 
         # data = pd.read_csv(r"C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\predictors\data\Grobler Boerdery_ndvi_Area3.csv",sep = ";")
         # data['EVI']= data['EVI']/10000
@@ -154,7 +154,7 @@ class farm_Classifier():
         predicted_category = loaded_model.predict(test_case_scaled)
         print("predicted_category",predicted_category)
         predicted_category_index = np.argmax(predicted_category)
-        # 4297.3007518796985
+    
         # Convert the predicted category index to NDVI label
         print("predicted_category_index",predicted_category_index)
         predicted_label = reverse_categorize_ndvi(predicted_category_index)
@@ -164,8 +164,8 @@ class farm_Classifier():
 
 
     def EVI(self,array):
-        loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\EVI.joblib')
-        # loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\EVI.joblib')
+        # loaded_model = joblib.load(r'C:\Users\S_CSIS-PostGrad\Documents\Hounors\Research Projects\Artefact\Backend\classifiers\EVI.joblib')
+        loaded_model = joblib.load(r'C:\Users\farai\OneDrive\Desktop\Documents\Hounors\Artifact\CropSenseAPI\Backend\classifiers\EVI.joblib')
         # Extract the features for prediction
         new_data = np.array([array])
         # Standardize the test case using the same scaler used for training
@@ -177,7 +177,7 @@ class farm_Classifier():
         predicted_category = loaded_model.predict(test_case_scaled)
         predicted_category_index = np.argmax(predicted_category)
         print(predicted_category_index)
-    	# 4297.3007518796985
+
         # Convert the predicted category index to NDVI label
         predicted_label = reverse_categorize_evi(predicted_category_index)  
         return predicted_label

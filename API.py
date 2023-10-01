@@ -1,8 +1,6 @@
 
 from flask import Flask, request, json, jsonify,render_template
 from flask_pymongo import PyMongo
-from bson.objectid import ObjectId
-from bson.json_util import dumps
 from bson import json_util
 from flask_cors import CORS
 import datetime
@@ -13,7 +11,7 @@ import bson
 import uuid
 # from data_gathering.gatherdataprofiles import Gather
 from predictors.EVIprediction import EVI_predictions
-from predictors.data_retrieve import retrieve
+from data_retrieve import retrieve
 from predictors.NDVIprediction import NDVI_predictions
 from predictors.MSAVIprediction import MSAVI_predictions
 from classifiers.Classifier_Service import farm_Classifier
@@ -223,13 +221,21 @@ def get_recent_bands():
     status= 200
     resp  = {}
     try:
-        instance= retrieve()
-        data  = instance.get_tail()
-        payload = {
-            "data":data
-        }
-        print(payload)
-        return jsonify(payload),status  
+        database_check  = parse_json(mongo.db.recentDataClass.find({}))
+        if database_check ==[]:
+            instance= retrieve()
+            data  = instance.get_tail()
+            payload = {
+                "data":data
+            }
+            mongo.db.recentDataClass.insert_one({"data":data})
+            return jsonify(payload),status  
+        else:
+            payload = {
+                "data":database_check[0]["data"]
+            }
+            return jsonify(payload),status  
+        
     except Exception as e : 
         print("ERROR on /get/model/classes",e)
         return jsonify(resp), status
@@ -297,7 +303,7 @@ def get_weather():
             'X-RapidAPI-Key': "b97746ddd1mshc2043dd274eda0fp16cb26jsn4c213461107f",
             'X-RapidAPI-Host': "ai-weather-by-meteosource.p.rapidapi.com"
         }
-        conn.request("GET", "/current?lat=37.81021&lon=-122.42282&timezone=auto&language=en&units=auto", headers=headers)
+        conn.request("GET", "/current?lat=26.67066&lon=27.08154&timezone=auto&language=en&units=auto", headers=headers)
 
         res = conn.getresponse()
         data = res.read()
