@@ -122,12 +122,3 @@ class MSAVI:
         
 
 
-# # Define a sample test case
-# test_case = np.array([[758.4887218045112,3395.864661654135,359.0902255639097,1192.6691729323309,2]])
-# # test_case = np.array([[500, 600, 700, 400, 6]])  # Example feature values for sur_refl_b01, sur_refl_b02, sur_refl_b03, sur_refl_b07, Month
-#   # Example feature values for sur_refl_b01, sur_refl_b02, sur_refl_b03, sur_refl_b07, Month
-
-# # Make predictions
-# predicted_ndvi_category = predict_ndvi(test_case)
-
-# print(f'Predicted NDVI Category: {predicted_ndvi_category}')
