@@ -9,6 +9,7 @@ import jwt
 import http.client
 import bson
 import uuid
+import os 
 # from data_gathering.gatherdataprofiles import Gather
 from predictors.EVIprediction import EVI_predictions
 from data_retrieve import retrieve
@@ -137,7 +138,8 @@ def set_profile_data():
             payload  = {
                 "email": data["data"]["email"],
                 "coordinates":data["data"]["coordinates"],
-                "subsection_name": data["data"]["subsection_name"]
+                "subsection_name": data["data"]["subsection_name"],
+                "file_name": data["data"]["file_name"]
             }
             print(payload)
             response = mongo.db.coordinates.insert_one(payload) 
@@ -146,7 +148,35 @@ def set_profile_data():
     except Exception  as e : 
         print("ERROR on /set/corodinates/dataprofile",e)
         return jsonify(resp), status
+@app.route("/get/data/file", methods=["POST"])
+def get_data():
+    status  = 200
+    resp  = {}
+    try: 
+        file1 = request.files["file"]
+    
+        # Check if the file is present in the request
+        if file1:
+            # Specify the folder where you want to save the file
+            upload_folder = "predictors/data"
 
+            # If the folder doesn't exist, create it
+            if not os.path.exists(upload_folder):
+                os.makedirs(upload_folder)
+
+            # Save the file to the specified folder
+            file_path = os.path.join(upload_folder, file1.filename)
+            file1.save(file_path)
+
+            resp["message"] = "File successfully saved."
+        else:
+            resp["message"] = "No file provided in the request."
+
+        return jsonify(resp), status
+        return jsonify(resp), status
+    except Exception  as e : 
+        print("ERROR on /get/data/file",e)
+        return jsonify(resp), status
 @app.route("/delete/corodinates/dataprofile", methods=["POST"])
 def delete_profile_data():
     status  = 200
@@ -156,7 +186,26 @@ def delete_profile_data():
         name = data["data"]["subsection_name"]
         print(data)
         if data != "":
-            response = mongo.db.coordinates.delete_one({"subsection_name":name}) 
+            response_file = parse_json(mongo.db.coordinates.find({"subsection_name":name}))
+            print(response_file)
+            if response_file != []:
+                    filename = response_file[0]["file_name"]
+                    print(filename)
+                    # Specify the folder where the file is located
+                    upload_folder = "predictors/data"
+
+                    # Create the full path to the file
+                    file_path = os.path.join(upload_folder, filename)
+
+                    # Check if the file exists before attempting to delete it
+                    if os.path.exists(file_path):
+                        # Delete the file
+                        os.remove(file_path)
+                        response = mongo.db.coordinates.delete_one({"subsection_name":name}) 
+                        resp["message"] = f"Section coordinates deleted"
+                    else:
+                        resp["message"] = f"Section coordinates not deleted."
+            
             resp = {"message": "Profile coordinates deleted"}
             return jsonify(resp), status
     except Exception  as e : 
@@ -226,6 +275,7 @@ def get_recent_bands():
             instance= retrieve()
             data  = instance.get_tail()
             payload = {
+                "id":"1",
                 "data":data
             }
             mongo.db.recentDataClass.insert_one({"data":data})
@@ -239,6 +289,29 @@ def get_recent_bands():
     except Exception as e : 
         print("ERROR on /get/model/classes",e)
         return jsonify(resp), status
+@app.route("/delete/recent/bands",methods= ["GET"])
+def delete_recent_bands():
+    status= 200
+    resp  = {}
+    try:
+        database_check  = parse_json(mongo.db.recentDataClass.find({}))
+        if database_check !=[]:
+            id= database_check[0]["id"]
+            mongo.db.recentDataClass.delete_one({"id":id})
+            payload ={
+                "message": "Recend bands deleted"
+            }
+            return jsonify(payload),status  
+        else:
+            payload ={
+                "message": "No recend bands"
+            }
+            return jsonify(payload),status 
+
+    except Exception as e : 
+        print("ERROR on /delete/recent/bands",e)
+        return jsonify(resp), status
+    
 @app.route("/post/model/classes",methods= ["POST"])
 def post_model_classes():
     status= 200
