@@ -16,6 +16,7 @@ from data_retrieve import retrieve
 from predictors.NDVIprediction import NDVI_predictions
 from predictors.MSAVIprediction import MSAVI_predictions
 from classifiers.Classifier_Service import farm_Classifier
+from chatbot.prompt import Bot
 
 
 app=Flask(__name__)
@@ -164,6 +165,34 @@ def set_profile_data():
             return jsonify(resp), status
     except Exception  as e : 
         print("ERROR on /set/corodinates/dataprofile",e)
+        return jsonify(resp), status
+    
+@app.route("/Sense/chat", methods=["POST"])
+def chat_with_sense():
+    status  = 200
+    resp  = {}
+    try: 
+        data = request.get_json("data")
+        print(data)
+        isinstance = Bot()
+        prompt = data["data"]["message"]
+        payload  = isinstance.test(prompt)
+        resp = {"message": payload}
+        return jsonify(resp), status
+    except Exception  as e : 
+        print("ERROR on /Sense/chat",e)
+        return jsonify(resp), status
+@app.route("/get/prompt/chat", methods=["GET"])
+def get_prompts():
+    status  = 200
+    resp  = {}
+    try: 
+        with open("./chatbot/intents.json") as file:
+            data = json.load(file)
+        resp = {"message": data}
+        return jsonify(resp), status
+    except Exception  as e : 
+        print("ERROR on /Sense/chat",e)
         return jsonify(resp), status
 @app.route("/get/data/file", methods=["POST"])
 def get_data():

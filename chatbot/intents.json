@@ -1,0 +1,208 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "How are you",
+        "Is anyone there?",
+        "Hello",
+        "Good day",
+        "Whats up"
+      ],
+      "responses": [
+        "Hello!Sense is here for you",
+        "Good to see you again!,You sense told you see Sense",
+        "Hi there, how can I help?",
+        "Sense is here for you ,what you need",
+        "Sense is here for you, what do you need?",
+    "Hello! Sense is ready to assist you, how can I help?",
+    "Hi there! Sense is at your service, what can I do for you today?",
+    "Good day! Sense is here to support you, what do you need assistance with?",
+    "What's up! Sense is ready and available, how can I assist you?"
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "cya",
+        "See you later",
+        "Goodbye",
+        "I am Leaving",
+        "Have a Good day"
+      ],
+      "responses": ["Sad to see you go :(", "Talk to you later", "Goodbye!"],
+      "context_set": ""
+    },
+    {
+      "tag": "age",
+      "patterns": [
+        "how old",
+        "how old is Sense",
+        "what is your age",
+        "how old are you",
+        "age?"
+      ],
+      "responses": ["I am 18 years old!", "18 years young!"],
+      "context_set": ""
+    },
+    {
+      "tag": "name",
+      "patterns": [
+        "What are you?",
+        "what is your name",
+        "what should I call you",
+        "whats your name?"
+      ],
+      "responses": [
+        "You can call me Sense.",
+        "I'm Sense!",
+        "I'm Sense, your Crop Monitoring Assistant."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "shop",
+      "patterns": [
+        "What are you?",
+        "Tell me about Crop Sense",
+        "What does Crop Sense offer?",
+        "What do you do?",
+        "Types of crops",
+        "Fun facts about farming",
+        "What services does Crop Sense offer?",
+        "Tell me more about Crop Sense",
+        "Explore Crop Sense features",
+        "How can Crop Sense help me?",
+        "Crop Sense capabilities"
+      ],
+      "responses": [
+        "Welcome to Crop Sense, your go-to for crop monitoring!",
+        "Crop Sense offers information about various crops, farming tips, and more.",
+        "Explore information on different types of crops and get interesting facts about farming.",
+        "Crop Sense offers a range of services to help you monitor and optimize your crops.",
+        "Discover the features of Crop Sense and how they can benefit your farming practices.",
+        "Explore the capabilities of Crop Sense, from crop monitoring to insightful farming tips.",
+        "Learn about how Crop Sense can assist you in making informed decisions for your farm.",
+        "Find out more about the various tools and resources available on Crop Sense."
+      ]
+    },
+    {
+      "tag": "hours",
+      "patterns": [
+        "when are you guys open",
+        "what are your hours",
+        "hours of operation"
+      ],
+      "responses": [
+        "Crop Sense is available 24/7 to assist you with crop monitoring and farming information!"
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "ndvi_info",
+      "patterns": [
+        "What is NDVI?",
+        "Tell me about NDVI",
+        "NDVI explanation",
+        "How does NDVI work?",
+        "What does high NDVI indicate?",
+        "How is NDVI calculated?",
+        "NDVI and drought monitoring",
+        "Can NDVI be used for deforestation detection?",
+        "Limitations of NDVI",
+        "Tell me more about NDVI",
+        "Why is NDVI important?",
+        "Applications of NDVI",
+        "How is NDVI used in agriculture?",
+        "Benefits of NDVI"
+      ],
+      "responses": [
+        "Normalized Difference Vegetation Index (NDVI) is a measure of plant health. It is calculated using the formula (NIR - Red) / (NIR + Red), where NIR is near-infrared and Red is the red band of satellite imagery.",
+        "High NDVI values typically indicate healthy and dense vegetation, while low values may suggest stressed or sparse vegetation.",
+        "NDVI is calculated using the formula (NIR - Red) / (NIR + Red), where NIR is near-infrared and Red is the red band of satellite imagery.",
+        "NDVI is valuable for drought monitoring as it helps identify regions experiencing water stress and assess vegetation health during dry periods.",
+        "Yes, NDVI is used for deforestation detection by analyzing changes in vegetation cover over time.",
+        "Limitations of NDVI include sensitivity to atmospheric conditions",
+        "NDVI is crucial for assessing vegetation health by measuring the difference between near-infrared and red light reflected by plants.",
+        "The importance of NDVI lies in its ability to monitor plant stress, detect diseases, and assess overall crop health.",
+        "NDVI has various applications, including crop monitoring, land cover classification, and assessing environmental changes.",
+        "In agriculture, NDVI is used to optimize crop management, monitor growth stages, and identify areas with potential issues.",
+        "The benefits of using NDVI in agriculture include improved yield prediction, resource optimization, and early detection of crop diseases."
+      ]
+    },
+    {
+      "tag": "evi_info",
+      "patterns": [
+        "What is EVI?",
+        "Tell me about EVI",
+        "EVI explanation",
+        "How does EVI work?",
+        "What is Enhanced Vegetation Index (EVI)?",
+        "Tell me about EVI",
+        "EVI explanation",
+        "How does EVI work?"
+      ],
+      "responses": [
+        "Enhanced Vegetation Index (EVI) is another vegetation index that enhances sensitivity in high biomass regions. It is calculated using a formula that includes the blue band, red band, and near-infrared band.",
+        "Enhanced Vegetation Index (EVI) is a vegetation index used to assess vegetation health and density.",
+        "EVI enhances sensitivity in high biomass regions compared to NDVI.",
+        "It is calculated using the formula: EVI = G * (NIR - Red) / (NIR + C1 * Red - C2 * Blue + L)",
+        "Where G is the gain factor, C1 and C2 are coefficients, and L is the canopy background adjustment."
+      ]
+    },
+    {
+      "tag": "msavi_info",
+      "patterns": [
+        "What is MSAVI?",
+        "Tell me about MSAVI",
+        "MSAVI explanation",
+        "How does MSAVI work?",
+        "What is MSAVI?",
+        "Tell me about MSAVI", 
+        "MSAVI explanation", 
+        "How does MSAVI work?"
+      ],
+      "responses": [
+        "Modified Soil-Adjusted Vegetation Index (MSAVI) is a vegetation index that corrects for soil background. It is particularly useful in areas with significant soil brightness. The formula is (2 * NIR + 1 - sqrt((2 * NIR + 1)^2 - 8 * (NIR - Red))) / 2.",
+        "Modified Soil-Adjusted Vegetation Index (MSAVI) is a vegetation index used in remote sensing to assess plant health and estimate vegetation cover.",
+        "MSAVI is particularly useful in areas with high soil brightness that can interfere with other vegetation indices.",
+        "The formula for MSAVI is (2 * NIR + 1 - sqrt((2 * NIR + 1)^2 - 8 * (NIR - Red))) / 2, where NIR is the near-infrared band and Red is the red band.",
+        "The index corrects for soil background, making it more suitable for regions with varying soil properties.",
+        "MSAVI values range from -1 to 1, with higher values indicating healthier vegetation.",
+        "It's widely used in agriculture to monitor crop health, especially in areas with challenging soil conditions."
+      ]
+    },
+    {
+      "tag": "farming_tips",
+      "patterns": [
+        "Give me farming tips",
+        "How to maintain my farm?",
+        "General farming advice",
+        "Give me farming tips", 
+        "How to maintain my farm?",
+         "General farming advice"
+      ],
+      "responses": [
+        "Ensure proper irrigation for your crops.",
+        "Monitor weather conditions regularly.",
+        "Use organic fertilizers for sustainable farming.",
+        "Rotate crops to maintain soil health.",
+        "Regularly check for signs of pests and diseases.",
+        "Practice crop rotation to improve soil fertility and reduce pest and disease pressure.",
+    "Use cover crops during the off-season to prevent soil erosion and add nutrients to the soil.",
+    "Implement water-conserving irrigation methods such as drip irrigation to efficiently water your crops.",
+    "Regularly monitor soil health by conducting soil tests to ensure optimal nutrient levels.",
+    "Integrate beneficial insects for natural pest control rather than relying solely on pesticides.",
+    "Promote biodiversity on your farm by planting a variety of crops and creating habitats for beneficial wildlife.",
+    "Utilize compost from organic waste to enrich the soil with nutrients in an environmentally friendly way.",
+    "Keep farm equipment well-maintained for efficient and effective operations.",
+    "Stay informed about local weather forecasts to plan planting and harvesting activities accordingly.",
+    "Invest in sustainable farming practices to reduce environmental impact and promote long-term viability.",
+    "Join local agricultural communities or online forums to share knowledge and experiences with other farmers.",
+    "Consider implementing agroforestry techniques to integrate trees and shrubs into your farming system for additional benefits."
+      ]
+    }
+  ]
+}
