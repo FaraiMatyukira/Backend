@@ -71,15 +71,18 @@ def signup():
         print(data)
         email = data["data"]["email"]
         password = data["data"]["password"]
+        lat = data["data"]["lat"]
+        lng = data["data"]["lng"]
         database_check = mongo.db.user.find_one({"email":f"{email}"})
-        id = bson.Binary.from_uuid(uuid.uuid1())
         if parse_json(database_check) == None:
             if  email !="" and password != "":
 
                 payload = {
                     "email":f"{email}",
                     "password":f"{password}",
-                    "user_number":id
+                    "user_id":1,
+                    "lat":lat,
+                    "lng":lng
                 }
                 mongo.db.user.insert_one(payload) 
                 status = 200  
@@ -126,7 +129,21 @@ def login():
     except Exception as e:
         print("ERROR on /User/Login",e)
         return jsonify(resp), status
-    
+@app.route("/get/center",methods=["GET"])
+def get_center():
+    status =200
+    resp = {}
+    try:
+      
+        database_check  = parse_json(mongo.db.user.find_one({"user_id":"1"}))
+        payload ={
+            "lat":float(database_check["lat"]),
+            "lng":float(database_check["lng"])
+        }
+        return jsonify(payload),status
+    except Exception as e:
+        print("ERROR on /get/center",e)
+        return jsonify(resp), status  
 @app.route("/set/corodinates/dataprofile", methods=["POST"])
 def set_profile_data():
     status  = 200
@@ -270,15 +287,15 @@ def get_recent_bands():
     status= 200
     resp  = {}
     try:
+        print("hello")
         database_check  = parse_json(mongo.db.recentDataClass.find({}))
         if database_check ==[]:
             instance= retrieve()
             data  = instance.get_tail()
             payload = {
-                "id":"1",
                 "data":data
             }
-            mongo.db.recentDataClass.insert_one({"data":data})
+            mongo.db.recentDataClass.insert_one({"data":data,"number":"1",})
             return jsonify(payload),status  
         else:
             payload = {
@@ -296,11 +313,12 @@ def delete_recent_bands():
     try:
         database_check  = parse_json(mongo.db.recentDataClass.find({}))
         if database_check !=[]:
-            id= database_check[0]["id"]
-            mongo.db.recentDataClass.delete_one({"id":id})
+            print(database_check)
+            response = mongo.db.recentDataClass.delete_one({"number":"1"})
             payload ={
                 "message": "Recend bands deleted"
             }
+            print(payload)
             return jsonify(payload),status  
         else:
             payload ={
